@@ -12,6 +12,9 @@ st.title("Stock Price Prediction")
 
 stocks = ("AAPL","GOOG","MSFT","GME","TSLA","PYPL","AMZN","FB","TWTR","INTC","CSCO","NVDA","AMD","BABA","NFLX","TSM","MU","V","VZ","WMT","WBA","WDC","WEC","WFC","WLTW","WYNN","XOM","YHOO","ZM","ZTS","SPOT")
 selected_stocks = st.selectbox("Select a stock for prediction",stocks)
+company = yf.Ticker(selected_stocks)
+long_name = company.info['longName']
+st.subheader(long_name)
 
 n_years = st.slider("Number of years for prediction",1,4)
 period = n_years*365
