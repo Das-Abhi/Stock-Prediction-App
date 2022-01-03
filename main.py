@@ -10,7 +10,7 @@ START = "2015-01-01"
 TODAY = date.today().strftime("%Y-%m-%d")
 st.title("Stock Price Prediction")
 
-stocks = ("AAPL","GOOG","MSFT","GME")
+stocks = ("AAPL","GOOG","MSFT","GME","TSLA","PYPL","AMZN","FB","TWTR","INTC","CSCO","NVDA","AMD","BABA","NFLX","TSM","MU","V","VZ","WMT","WBA","WDC","WEC","WFC","WLTW","WYNN","XOM","YHOO","ZM","ZTS","SPOT")
 selected_stocks = st.selectbox("Select a stock for prediction",stocks)
 
 n_years = st.slider("Number of years for prediction",1,4)
@@ -28,3 +28,32 @@ data_load_state.text("Data loaded.")
 
 st.subheader('Raw data')
 st.write(data.tail())
+
+def plot_raw_data():
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name='stock open'))
+    fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name='stock close'))
+    fig.layout.update(title_text="Time Series Data", xaxis_rangeslider_visible=True)
+    st.plotly_chart(fig)
+
+plot_raw_data()
+
+# Forecasting
+df_train = data[['Date', 'Close']]
+df_train = df_train.rename(columns={"Date": "ds", "Close": "y"})
+
+m = Prophet()
+m.fit(df_train)
+future = m.make_future_dataframe(periods=period)
+forecast = m.predict(future)
+
+st.subheader('Forecast Data')
+st.write(forecast.tail())
+
+st.write('Forecast Data')
+fig1 = plot_plotly(m, forecast)
+st.plotly_chart(fig1)
+
+st.write('Forecast Components')
+fig2 = m.plot_components(forecast)
+st.write(fig2)
